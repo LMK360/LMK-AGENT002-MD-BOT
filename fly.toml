@@ -1,0 +1,21 @@
+app = "your-app-name"
+primary_region = "jhb"  # Closest region (e.g. jhb for Johannesburg)
+
+[build]
+  image = "node:18"
+
+[env]
+  NODE_ENV = "production"
+  SESSION_ID = "put-your-session-id-here"
+
+[[services]]
+  internal_port = 9090
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
