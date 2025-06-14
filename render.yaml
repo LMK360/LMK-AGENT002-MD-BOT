@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: my-whatsapp-bot
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    branch: main
+    envVars:
+      - key: SESSION_ID
+        value: your_session_id_here
+      - key: BOT_NAME
+        value: MyBot
+      - key: OWNER_NAME
+        value: YourName
+      - key: API_KEY
+        value: your_api_key
