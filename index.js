@@ -1,5 +1,6 @@
 //===================REQUIRED MODULES=======================
-const { default: makeWASocket, useSingleFileAuthState } = require('@whiskeysockets/baileys');
+const { useSingleFileAuthState } = require('@whiskeysockets/baileys');
+const { state, saveState } = useSingleFileAuthState('./auth_info.json');
 const { Boom } = require('@hapi/boom');
 const fs = require('fs');
 const express = require("express");
