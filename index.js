@@ -1,5 +1,6 @@
 //===================REQUIRED MODULES=======================
-const { default: makeWASocket, useSingleFileAuthState } = require('@whiskeysockets/baileys');
+const makeWASocket = require('@whiskeysockets/baileys').default;
+const { useSingleFileAuthState } = require('@whiskeysockets/baileys/auth');
 const { Boom } = require('@hapi/boom');
 const fs = require('fs');
 const express = require("express");
@@ -7,21 +8,38 @@ const File = require("megajs").File;
 const config = require("./config");
 
 //===================SESSION-AUTH============================
-if (!fs.existsSync(__dirname + '/sessions/creds.json')) {
-  if (!config.SESSION_ID) return console.log('❌ Please add your SESSION_ID to config.js');
+async function loadSession() {
+  const sessionPath = path.resolve(__dirname, 'sessions', 'creds.json');
+  if (!fs.existsSync(sessionPath)) {
+    if (!config.SESSION_ID) {
+      console.log('❌ Please add your SESSION_ID to config.js');
+      process.exit(1);
+    }
 
-  const sessData = config.SESSION_ID.replace("IK~", '');
-  const file = File.fromURL(`https://mega.nz/file/${sessData}`);
-  
-  file.download((err, data) => {
-    if (err) throw err;
-    fs.writeFileSync(__dirname + '/sessions/creds.json', data);
-    console.log("✅ Session downloaded successfully!");
-  });
+    const sessData = config.SESSION_ID.replace("IK~", '');
+    const file = File.fromURL(`https://mega.nz/file/${sessData}`);
+
+    try {
+      console.log('🔄 Downloading session from Mega...');
+      const data = await new Promise((resolve, reject) => {
+        file.download((err, data) => {
+          if (err) reject(err);
+          else resolve(data);
+        });
+      });
+
+      fs.mkdirSync(path.dirname(sessionPath), { recursive: true });
+      fs.writeFileSync(sessionPath, data);
+      console.log("✅ Session downloaded successfully!");
+    } catch (e) {
+      console.error('❌ Failed to download session:', e);
+      process.exit(1);
+    }
+  }
+return useSingleFileAuthState(sessionPath);
 }
 
-const { state, saveState } = useSingleFileAuthState('./sessions/creds.json');
-
+module.exports = { loadSession };
 //===================START EXPRESS SERVER=====================
 const app = express();app.get('/', (req, res) => res.send('🤖 Bot is Running...'));
 app.listen(port, () => console.log(`🌐 Server listening on port{port}`));
