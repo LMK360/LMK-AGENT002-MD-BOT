@@ -40,8 +40,13 @@ return useSingleFileAuthState(sessionPath);
 
 module.exports = { loadSession };
 //===================START EXPRESS SERVER=====================
-const app = express();app.get('/', (req, res) => res.send('🤖 Bot is Running...'));
-app.listen(port, () => console.log(`🌐 Server listening on port{port}`));
+const app = express();
+
+const port = process.env.PORT || 3000;
+
+app.get('/', (req, res) => res.send('🤖 Bot is Running...'));
+
+app.listen(port, () => console.log(`🌐 Server listening on port ${port}`));
 
 //===================START BOT==============================
 async function startBot() {
