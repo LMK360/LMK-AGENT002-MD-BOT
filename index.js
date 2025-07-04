@@ -20,7 +20,8 @@ const {
     jidDecode,
     fetchLatestBaileysVersion,
     Browsers
-  } = require('@whiskeysockets/baileys')const { Boom } = require('@hapi/boom');
+  } = require('@whiskeysockets/baileys')
+const { Boom } = require('@hapi/boom');
 const fs = require('fs');
 const express = require("express");
 const File = require("megajs").File;
