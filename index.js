@@ -31,11 +31,16 @@ async function loadSessionFromMega() {
       const data = await new Promise((resolve, reject) => {
         file.download((err, data) => {
           if (err) reject(err);
-          else resolve(data);
-        });
+          
+      const data = await new Promise((resolve, reject) => {
+  file.download((err, data) => {
+    if (err) reject(err);
+    else resolve(data);
+  });
+});
 
-      fs.mkdirSync(path.dirname(sessionPath),  recursive: true );
-      fs.writeFileSync(sessionPath, data);
+fs.mkdirSync(path.dirname(sessionPath), { recursive: true });
+fs.writeFileSync(sessionPath, data);
       console.log("✅ Session downloaded successfully!");
      catch (e) 
       console.error('❌ Failed to download session:', e);
