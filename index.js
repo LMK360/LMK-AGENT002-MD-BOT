@@ -32,8 +32,7 @@ async function loadSessionFromMega() {
         file.download((err, data) => {
           if (err) reject(err);
           else resolve(data);
-        );
-      );
+        });
 
       fs.mkdirSync(path.dirname(sessionPath),  recursive: true );
       fs.writeFileSync(sessionPath, data);
