@@ -1,35 +1,22 @@
 //===================REQUIRED MODULES=======================
 const {
   default: makeWASocket,
-    useMultiFileAuthState,
-    DisconnectReason,
-    jidNormalizedUser,
-    isJidBroadcast,
-    getContentType,
-    proto,
-    generateWAMessageContent,
-    generateWAMessage,
-    AnyMessageContent,
-    prepareWAMessageMedia,
-    areJidsSameUser,
-    downloadContentFromMessage,
-    MessageRetryMap,
-    generateForwardMessageContent,
-    generateWAMessageFromContent,
-    generateMessageID, makeInMemoryStore,
-    jidDecode,
-    fetchLatestBaileysVersion,
-    Browsers
-  } = require('@whiskeysockets/baileys')
-const { Boom } = require('@hapi/boom');
+  useSingleFileAuthState,
+  DisconnectReason,
+  Boom
+} = require('@whiskeysockets/baileys');
+
 const fs = require('fs');
+const path = require('path');
 const express = require("express");
 const File = require("megajs").File;
 const config = require("./config");
 
 //===================SESSION-AUTH============================
-async function loadSession() {
-  const sessionPath = path.resolve(__dirname, 'sessions', 'creds.json');
+const sessionPath = path.resolve(__dirname, 'sessions', 'creds.json');
+const { state, saveState } = useSingleFileAuthState(sessionPath);
+
+async function loadSessionFromMega() {
   if (!fs.existsSync(sessionPath)) {
     if (!config.SESSION_ID) {
       console.log('❌ Please add your SESSION_ID to config.js');
@@ -45,32 +32,27 @@ async function loadSession() {
         file.download((err, data) => {
           if (err) reject(err);
           else resolve(data);
-        });
-      });
+        );
+      );
 
-      fs.mkdirSync(path.dirname(sessionPath), { recursive: true });
+      fs.mkdirSync(path.dirname(sessionPath),  recursive: true );
       fs.writeFileSync(sessionPath, data);
       console.log("✅ Session downloaded successfully!");
-    } catch (e) {
+     catch (e) 
       console.error('❌ Failed to download session:', e);
       process.exit(1);
-    }
-  }
-return useSingleFileAuthState(sessionPath);
-}
+    
 
-module.exports = { loadSession };
 //===================START EXPRESS SERVER=====================
 const app = express();
-
 const port = process.env.PORT || 3000;
-
 app.get('/', (req, res) => res.send('🤖 Bot is Running...'));
-
-app.listen(port, () => console.log(`🌐 Server listening on port ${port}`));
+app.listen(port, () => console.log(`🌐 Server listening on port{port}`));
 
 //===================START BOT==============================
 async function startBot() {
+  await loadSessionFromMega();
+
   const client = makeWASocket({
     auth: state,
     printQRInTerminal: true,
@@ -123,6 +105,5 @@ async function startBot() {
       client.sendMessage(msg.key.remoteJid, { text: "🏓 Pong!" });
     }
   });
-}
-
-startBot();
+          }
+    startBot();
