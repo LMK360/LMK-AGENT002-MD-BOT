@@ -32,7 +32,7 @@ async function loadSessionFromMega() {
         file.download((err, data) => {
           if (err) reject(err);
           
-      const data = await new Promise((resolve, reject) => {
+      const sessionData = await new Promise((resolve, reject) => {
   file.download((err, fileData) => {
     if (err) reject(err);
     else resolve(fileData);
